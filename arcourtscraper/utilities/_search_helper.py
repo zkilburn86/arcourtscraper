@@ -33,17 +33,20 @@ def parse_results(content):
     soup = BeautifulSoup(content,features='lxml')
     table = soup.find('table')
 
-    headers = _get_headers(table)
-    df = pd.DataFrame(columns=headers)
+    if table is not None:
+        headers = _get_headers(table)
+        df = pd.DataFrame(columns=headers)
 
-    rows = table.findChildren('tr')
-    for row in rows:
-        cells = row.findChildren('td')
-        if cells != []:
-            df_row = _get_df_row(cells, headers)
-            df = df.append(df_row, ignore_index=True)
-    
-    return df
+        rows = table.findChildren('tr')
+        for row in rows:
+            cells = row.findChildren('td')
+            if cells != []:
+                df_row = _get_df_row(cells, headers)
+                df = df.append(df_row, ignore_index=True)
+        
+        return df
+    else:
+        return None
 
 def _get_headers(table):
     header_row = table.findChildren('th')

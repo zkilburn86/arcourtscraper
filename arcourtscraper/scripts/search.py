@@ -1,5 +1,5 @@
-from arcourtscraper import chromedriver, arcourt, _helper
-import pandas as pd
+from arcourtscraper import chromedriver, arcourt
+from arcourtscraper.utilities import _search_helper
 
 
 def by_date(begin_date, end_date, **kwargs):
@@ -10,10 +10,10 @@ def by_date(begin_date, end_date, **kwargs):
         end_date=end_date
     )
 
-    date_search = _helper.parse_args(date_search, kwargs)
+    date_search = _search_helper.parse_args(date_search, kwargs)
 
-    url = _helper.build_url(date_search)
+    url = _search_helper.build_url(date_search)
 
     driver.get(url)
 
-    return _helper.parse_results(driver.page_source)
+    return _search_helper.parse_results(driver.page_source)
