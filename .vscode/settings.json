@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "/home/zkilburn/.local/share/virtualenvs/arcourtscraper-AJqflCE2/bin/python",
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "/home/zkilburn/projects/consulting/arcourtscraper"
+    }
+}
