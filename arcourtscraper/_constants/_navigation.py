@@ -31,3 +31,25 @@ HEADINGS = [
     'Milestone Tracks',
     'Docket Entries'
 ]
+
+CASE_DETAIL_HANDLER = {
+    'Report Selection Criteria': '_parse_rsc',
+    'Case Description': '_parse_rsc',
+    'Case Event Schedule': '_parse_events',
+    'Case Parties': '_parse_parties',
+    'Violations': '',
+    'Sentence': '',
+    'Milestone Tracks': '',
+    'Docket Entries': ''
+}
+
+REPORT_SELECTION_CRITERIA = [
+    'Case ID',
+    'Citation No',
+    'Docket Start Date',
+    'Docket Ending Date'
+]
+
+### New Web Layout ###
+
+CASE_ID_SEARCH = 'https://caseinfonew.arcourts.gov/pls/apexpcc/f?p=313:15:206076974987427::NO:::'

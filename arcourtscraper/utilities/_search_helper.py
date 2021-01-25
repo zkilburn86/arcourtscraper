@@ -60,8 +60,10 @@ def _get_headers(table):
 def _get_df_row(cells, headers):
     df_row = {}
 
+    indexer = 0
     for cell in cells:
-        header = headers[cells.index(cell)]
+        header = headers[indexer]
         df_row[header] = cell.text.strip()
+        indexer += 1
 
     return df_row
