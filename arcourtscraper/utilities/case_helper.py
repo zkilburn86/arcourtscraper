@@ -10,14 +10,17 @@ def process_case(content):
     all_u_tags = soup.find_all('u')
     for tag in all_u_tags:
         heading = tag.text.strip()
-        if heading in ['Report Selection Criteria','Case Description','Case Event Schedule','Case Parties']: ## should be navigation.HEADINGS
+        if heading in ['Violations']: ## should be navigation.HEADINGS
             results[heading] = _determine_parser(heading, tag)
     return results
 
 def _determine_parser(heading, tag):
-    table = tag.find_next('table')
     parser = navigation.CASE_DETAIL_HANDLER.get(heading)
-    results = globals()[parser](table)
+    if heading not in navigation.NON_TABLE_DATA:
+        table = tag.find_next('table')
+        results = globals()[parser](table)
+    else:
+        results = globals()[parser](tag)
     return results
 
 def _parse_rsc(table):
@@ -62,6 +65,10 @@ def _parse_parties(table):
                 results[-1].update(additional_details)
             
     return results
+
+def _parse_violations(tag):
+    name = tag.find_all_next()
+    return name
       
 def _clean_cells(row):
     clean_cells = []

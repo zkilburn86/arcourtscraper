@@ -37,17 +37,16 @@ CASE_DETAIL_HANDLER = {
     'Case Description': '_parse_rsc',
     'Case Event Schedule': '_parse_events',
     'Case Parties': '_parse_parties',
-    'Violations': '',
+    'Violations': '_parse_violations',
     'Sentence': '',
     'Milestone Tracks': '',
     'Docket Entries': ''
 }
 
-REPORT_SELECTION_CRITERIA = [
-    'Case ID',
-    'Citation No',
-    'Docket Start Date',
-    'Docket Ending Date'
+NON_TABLE_DATA = [
+    'Violations',
+    'Sentence',
+    'Milestone Tracks'
 ]
 
 ### New Web Layout ###
