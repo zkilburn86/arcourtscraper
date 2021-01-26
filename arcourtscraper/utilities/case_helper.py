@@ -1,4 +1,4 @@
-from arcourtscraper._constants import _navigation
+from arcourtscraper.constants import navigation
 import urllib.parse
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -10,13 +10,13 @@ def process_case(content):
     all_u_tags = soup.find_all('u')
     for tag in all_u_tags:
         heading = tag.text.strip()
-        if heading in ['Report Selection Criteria','Case Description','Case Event Schedule','Case Parties']: ## should be _navigation.HEADINGS
+        if heading in ['Report Selection Criteria','Case Description','Case Event Schedule','Case Parties']: ## should be navigation.HEADINGS
             results[heading] = _determine_parser(heading, tag)
     return results
 
 def _determine_parser(heading, tag):
     table = tag.find_next('table')
-    parser = _navigation.CASE_DETAIL_HANDLER.get(heading)
+    parser = navigation.CASE_DETAIL_HANDLER.get(heading)
     results = globals()[parser](table)
     return results
 

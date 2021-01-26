@@ -31,4 +31,4 @@ df = search.by_date(
     )
 ```
 
-The `begin_date` and `end_date` arguments are required, and the default values for **kwargs can be found in `arcourtscraper._constants`. Be careful using defaults, start with small date ranges to avoid long-running requests. 
+The `begin_date` and `end_date` arguments are required, and the default values for **kwargs can be found in `arcourtscraper.constants`. Be careful using defaults, start with small date ranges to avoid long-running requests. 

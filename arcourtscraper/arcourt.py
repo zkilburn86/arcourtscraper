@@ -1,4 +1,4 @@
-from arcourtscraper._constants import _defaults
+from arcourtscraper.constants import defaults
 
 class Case:
 
@@ -26,9 +26,9 @@ class Party:
 
 class DateSearch:
 
-    def __init__(self, search_type=_defaults.SEARCH_TYPE, begin_date=_defaults.BEGIN_DATE, 
-                end_date=_defaults.END_DATE,case_type=_defaults.CASE_TYPE, county_code=_defaults.COUNTY_CODE, 
-                cort_code=_defaults.CORT_CODE, locn_code=_defaults.LOCN_CODE,
+    def __init__(self, search_type=defaults.SEARCH_TYPE, begin_date=defaults.BEGIN_DATE, 
+                end_date=defaults.END_DATE,case_type=defaults.CASE_TYPE, county_code=defaults.COUNTY_CODE, 
+                cort_code=defaults.CORT_CODE, locn_code=defaults.LOCN_CODE,
                 case_id=False):
 
                 self.search_type = search_type

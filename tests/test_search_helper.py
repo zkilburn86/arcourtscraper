@@ -1,4 +1,4 @@
-from arcourtscraper.utilities import _search_helper
+from arcourtscraper.utilities import search_helper
 from arcourtscraper.arcourt import DateSearch
 
 
@@ -18,7 +18,7 @@ def test_parse_args():
         'case_id': '04CR-20-2761'
     }
 
-    date_search = _search_helper.parse_args(date_search, args)
+    date_search = search_helper.parse_args(date_search, args)
 
     assert date_search.locn_code == 'CI - CIRCUIT'
     assert date_search.case_type == 'DI - FELONY'
@@ -40,8 +40,8 @@ def test_build_url():
         'case_id': '04CR-20-2761'
     }
 
-    date_search = _search_helper.parse_args(date_search, args)
-    url = _search_helper.build_url(date_search)
+    date_search = search_helper.parse_args(date_search, args)
+    url = search_helper.build_url(date_search)
     expected = 'https://caseinfo.arcourts.gov/cconnect/PROD/public/ck_public_qry_doct.cp_dktrpt_new_case_report?backto=C&begin_date=12%2F01%2F2020&end_date=12%2F02%2F2020&case_type=DI%20-%20FELONY&county_code=04%20-%20BENTON&cort_code=04%20-%20BENTON&locn_code=CI%20-%20CIRCUIT&case_id=04CR-20-2761'
 
     assert url == expected

@@ -1,4 +1,4 @@
-from arcourtscraper._constants import _navigation
+from arcourtscraper.constants import navigation
 import urllib.parse
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -23,8 +23,8 @@ def build_url(search):
         params.pop('case_id')
     
     search_string = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
-    url = _navigation.BASE_URL + \
-        _navigation.SEARCH_TYPE_CONVERTER.get(search.search_type) + \
+    url = navigation.BASE_URL + \
+        navigation.SEARCH_TYPE_CONVERTER.get(search.search_type) + \
         search_string
     
     return url
