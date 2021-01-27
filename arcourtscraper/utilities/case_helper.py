@@ -2,6 +2,7 @@ from arcourtscraper.constants import navigation
 import urllib.parse
 from bs4 import BeautifulSoup
 import pandas as pd
+import re
 
 
 def process_case(content):
@@ -10,17 +11,21 @@ def process_case(content):
     all_u_tags = soup.find_all('u')
     for tag in all_u_tags:
         heading = tag.text.strip()
-        if heading in ['Violations']: ## should be navigation.HEADINGS
+        if heading in [] and heading not in navigation.NON_TABLE_DATA: ## should be navigation.HEADINGS
             results[heading] = _determine_parser(heading, tag)
+        elif heading in navigation.NON_TABLE_DATA and heading == 'Violations':
+            results[heading] = _handle_custom_parsing(heading, tag)
     return results
 
 def _determine_parser(heading, tag):
     parser = navigation.CASE_DETAIL_HANDLER.get(heading)
-    if heading not in navigation.NON_TABLE_DATA:
-        table = tag.find_next('table')
-        results = globals()[parser](table)
-    else:
-        results = globals()[parser](tag)
+    table = tag.find_next('table')
+    results = globals()[parser](table)
+    return results
+
+def _handle_custom_parsing(heading, tag):
+    parser = navigation.CASE_DETAIL_HANDLER.get(heading)
+    results = globals()[parser](tag)
     return results
 
 def _parse_rsc(table):
@@ -67,8 +72,46 @@ def _parse_parties(table):
     return results
 
 def _parse_violations(tag):
-    name = tag.find_all_next()
-    return name
+    violations = _violation_scrubber(tag.find_all_next(string=True))
+
+    results = []
+    indexer = 0
+    output = {}
+    for violation in violations:
+        if violation[-1] == ':' and violation != ':':
+            if violation == 'Violation:':
+                if violations[indexer + 1] == '1':
+                    output['Party'] = violations[indexer - 1]
+                else:
+                    output['Level'] = re.sub('\xa0','',output.get('Level'))
+                    results.append(output)
+                    output = {}
+                    output['Party'] = violations[indexer - 1]
+            if indexer + 1 < len(violations):
+                output[re.sub(':','',violation)] = violations[indexer + 1]
+        elif violation[0] == ':' and violation != ':':
+            output[violations[indexer - 1]] = violation.replace(':','',1).strip()
+        elif violation == ':':
+            output[re.sub(':','',violations[indexer - 1] + violation)] = 'N/A'
+        if violation == 'Plea':
+            output['Description'] = violations[indexer + 2] + ', ' + violations[indexer + 3]
+        indexer += 1
+        if len(violations) == indexer:
+            output['Level'] = re.sub('\xa0','',output.get('Level'))
+            results.append(output)
+    
+    return results
+
+def _violation_scrubber(all_strings):
+    violations = []
+    for item in all_strings:
+        clean_item = item.strip()
+        if clean_item != '':
+            if clean_item == 'Sentence':
+                break
+            else:
+                violations.append(clean_item)
+    return violations
       
 def _clean_cells(row):
     clean_cells = []
