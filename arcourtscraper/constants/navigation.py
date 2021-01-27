@@ -33,14 +33,14 @@ HEADINGS = [
 ]
 
 CASE_DETAIL_HANDLER = {
-    'Report Selection Criteria': '_parse_rsc',
-    'Case Description': '_parse_rsc',
+    'Report Selection Criteria': '_parse_report_or_desc',
+    'Case Description': '_parse_report_or_desc',
     'Case Event Schedule': '_parse_events',
-    'Case Parties': '_parse_parties',
+    'Case Parties': '_parse_parties_or_docket',
     'Violations': '_parse_violations',
     'Sentence': '_parse_sentence',
     'Milestone Tracks': '_skip_parse',
-    'Docket Entries': ''
+    'Docket Entries': '_parse_parties_or_docket'
 }
 
 NON_TABLE_DATA = [

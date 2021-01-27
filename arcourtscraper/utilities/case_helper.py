@@ -11,9 +11,9 @@ def process_case(content):
     all_u_tags = soup.find_all('u')
     for tag in all_u_tags:
         heading = tag.text.strip()
-        if heading in [] and heading not in navigation.NON_TABLE_DATA: ## should be navigation.HEADINGS
+        if heading in ['Docket Entries'] and heading not in navigation.NON_TABLE_DATA: ## should be navigation.HEADINGS instead of defined list
             results[heading] = _determine_parser(heading, tag)
-        elif heading in navigation.NON_TABLE_DATA:
+        elif heading in navigation.NON_TABLE_DATA and heading == '':
             results[heading] = _handle_custom_parsing(heading, tag)
     return results
 
@@ -28,10 +28,11 @@ def _handle_custom_parsing(heading, tag):
     results = globals()[parser](tag)
     return results
 
+### Unable to find an example of Milestone Tracks to parse yet
 def _skip_parse(tag):
     return tag.text.strip() + ' not currently available'
 
-def _parse_rsc(table):
+def _parse_report_or_desc(table):
     clean_cells = []
     results = {}
 
@@ -56,7 +57,7 @@ def _parse_events(table):
     
     return results
 
-def _parse_parties(table):
+def _parse_parties_or_docket(table):
     results = []
 
     if table is not None:
