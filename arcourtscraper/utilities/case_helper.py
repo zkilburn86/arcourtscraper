@@ -13,7 +13,7 @@ def process_case(content):
         heading = tag.text.strip()
         if heading in [] and heading not in navigation.NON_TABLE_DATA: ## should be navigation.HEADINGS
             results[heading] = _determine_parser(heading, tag)
-        elif heading in navigation.NON_TABLE_DATA and heading == 'Violations':
+        elif heading in navigation.NON_TABLE_DATA and heading in ['Violations','Sentence']:
             results[heading] = _handle_custom_parsing(heading, tag)
     return results
 
@@ -71,47 +71,68 @@ def _parse_parties(table):
             
     return results
 
-def _parse_violations(tag):
-    violations = _violation_scrubber(tag.find_all_next(string=True))
+def _parse_sentence(tag):
+    sentence_strings = _page_string_scrubber(tag.find_all_next(string=True), 'Milestone Tracks')
 
     results = []
     indexer = 0
     output = {}
-    for violation in violations:
-        if violation[-1] == ':' and violation != ':':
-            if violation == 'Violation:':
-                if violations[indexer + 1] == '1':
-                    output['Party'] = violations[indexer - 1]
-                else:
-                    output['Level'] = re.sub('\xa0','',output.get('Level'))
-                    results.append(output)
-                    output = {}
-                    output['Party'] = violations[indexer - 1]
-            if indexer + 1 < len(violations):
-                output[re.sub(':','',violation)] = violations[indexer + 1]
-        elif violation[0] == ':' and violation != ':':
-            output[violations[indexer - 1]] = violation.replace(':','',1).strip()
-        elif violation == ':':
-            output[re.sub(':','',violations[indexer - 1] + violation)] = 'N/A'
-        if violation == 'Plea':
-            output['Description'] = violations[indexer + 2] + ', ' + violations[indexer + 3]
+    for sentence_string in sentence_strings:
+        if sentence_string[-1] == ':' and sentence_string != ':':
+            if indexer + 1 < len(sentence_strings):
+                output[re.sub(':','',sentence_string)] = sentence_strings[indexer + 1]
+        elif sentence_string[0] == ':' and sentence_string != ':':
+            output[sentence_strings[indexer - 1]] = sentence_string.replace(':','',1).strip()
+        elif sentence_string == ':':
+            output[re.sub(':','',sentence_strings[indexer - 1] + sentence_string)] = 'N/A'
         indexer += 1
-        if len(violations) == indexer:
-            output['Level'] = re.sub('\xa0','',output.get('Level'))
+        if len(sentence_strings) == indexer:
+            output = {k:_scrub_output_values(v) for k, v in output.items()}
             results.append(output)
     
     return results
 
-def _violation_scrubber(all_strings):
-    violations = []
+def _parse_violations(tag):
+    violation_strings = _page_string_scrubber(tag.find_all_next(string=True), 'Sentence')
+
+    results = []
+    indexer = 0
+    output = {}
+    for violation_string in violation_strings:
+        if violation_string[-1] == ':' and violation_string != ':':
+            if violation_string == 'Violation:':
+                if violation_strings[indexer + 1] == '1':
+                    output['Party'] = violation_strings[indexer - 1]
+                else:
+                    output = {k:_scrub_output_values(v) for k, v in output.items()}
+                    results.append(output)
+                    output = {}
+                    output['Party'] = violation_strings[indexer - 1]
+            if indexer + 1 < len(violation_strings):
+                output[re.sub(':','',violation_string)] = violation_strings[indexer + 1]
+        elif violation_string[0] == ':' and violation_string != ':':
+            output[violation_strings[indexer - 1]] = violation_string.replace(':','',1).strip()
+        elif violation_string == ':':
+            output[re.sub(':','',violation_strings[indexer - 1] + violation_string)] = 'N/A'
+        if violation_string == 'Plea':
+            output['Description'] = violation_strings[indexer + 2] + ', ' + violation_strings[indexer + 3]
+        indexer += 1
+        if len(violation_strings) == indexer:
+            output = {k:_scrub_output_values(v) for k, v in output.items()}
+            results.append(output)
+    
+    return results
+
+def _page_string_scrubber(all_strings, stop_string):
+    clean_strings = []
     for item in all_strings:
         clean_item = item.strip()
         if clean_item != '':
-            if clean_item == 'Sentence':
+            if clean_item == stop_string:
                 break
             else:
-                violations.append(clean_item)
-    return violations
+                clean_strings.append(clean_item)
+    return clean_strings
       
 def _clean_cells(row):
     clean_cells = []
@@ -156,3 +177,13 @@ def _build_non_standard_row(row):
             next_cell = cell.find_next('td')
             row_dict[cell.text.strip()] = next_cell.text.strip()
     return row_dict
+
+def _scrub_output_values(output_value):
+    output_value = re.sub('\xa0','',output_value)
+    return output_value
+
+def _key_check(dict_to_check, key_to_check):
+    if key_to_check in dict_to_check:
+        return True
+    else:
+        return False

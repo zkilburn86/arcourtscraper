@@ -38,7 +38,7 @@ CASE_DETAIL_HANDLER = {
     'Case Event Schedule': '_parse_events',
     'Case Parties': '_parse_parties',
     'Violations': '_parse_violations',
-    'Sentence': '',
+    'Sentence': '_parse_sentence',
     'Milestone Tracks': '',
     'Docket Entries': ''
 }
