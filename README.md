@@ -16,7 +16,7 @@ The goal of this project is to offer an easy way to both search and retrieve det
 
 ## Currently Available Features
 
-Retrieve search results for cases filed by date
+### Retrieve search results for cases filed by date
 
 ```
 from arcourtscraper.scripts import search
@@ -32,3 +32,24 @@ df = search.by_date(
 ```
 
 The `begin_date` and `end_date` arguments are required, and the default values for **kwargs can be found in `arcourtscraper.constants`. Be careful using defaults, start with small date ranges to avoid long-running requests. 
+
+### Parse a specific case into it's components
+
+```
+from arcourtscraper.scripts import parse
+import pprint
+
+#Must know case_id
+pprint.pprint(parse.case('04CR-20-181'))
+
+...
+{'Case Description': {'Case ID:': '04CR-20-181 - STATE V DANIEL '
+                                  'FELICIANO-HERNANDEZ-PLEA/STIPULATION',
+                      'Court:': '04 - BENTON',
+                      'Filing Date:': 'Monday   , January   27th, 2020',
+                      'Images:': '',
+                      'Location:': 'CI - CIRCUIT',
+                      'Status:': 'CLOSED - CASE CLOSED',
+                      'Type:': 'DI - FELONY'},
+                      ...
+```
