@@ -49,6 +49,12 @@ NON_TABLE_DATA = [
     'Milestone Tracks'
 ]
 
+UNAVAILABLE_STATEMENTS = {
+    'Case Event Schedule': 'No case events were found.',
+    'Sentence': 'No Sentence Info Found.',
+    'Milestone Tracks': 'No Milestone Tracks found.'
+}
+
 ### New Web Layout ###
 
 CASE_ID_SEARCH = 'https://caseinfonew.arcourts.gov/pls/apexpcc/f?p=313:15:206076974987427::NO:::'

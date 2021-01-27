@@ -9,4 +9,4 @@ def case(case_id):
 
     results = case_helper.process_case(driver.page_source)
 
-    print(results)
+    return results

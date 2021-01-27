@@ -11,26 +11,46 @@ def process_case(content):
     all_u_tags = soup.find_all('u')
     for tag in all_u_tags:
         heading = tag.text.strip()
-        if heading in ['Docket Entries'] and heading not in navigation.NON_TABLE_DATA: ## should be navigation.HEADINGS instead of defined list
+        if heading in navigation.HEADINGS and heading not in navigation.NON_TABLE_DATA:
             results[heading] = _determine_parser(heading, tag)
-        elif heading in navigation.NON_TABLE_DATA and heading == '':
+        elif heading in navigation.NON_TABLE_DATA:
             results[heading] = _handle_custom_parsing(heading, tag)
     return results
 
 def _determine_parser(heading, tag):
     parser = navigation.CASE_DETAIL_HANDLER.get(heading)
-    table = tag.find_next('table')
-    results = globals()[parser](table)
+    if not _check_unavailable(heading, tag):
+        table = tag.find_next('table')
+        results = globals()[parser](table)
+    else:
+        results = _skip_parse(tag)
     return results
 
 def _handle_custom_parsing(heading, tag):
     parser = navigation.CASE_DETAIL_HANDLER.get(heading)
-    results = globals()[parser](tag)
+    if not _check_unavailable(heading, tag):
+        results = globals()[parser](tag)
+    else:
+        results = _skip_parse(tag)
     return results
 
-### Unable to find an example of Milestone Tracks to parse yet
+### Unable to find an example of Milestone Tracks to parse yet so this is the default
 def _skip_parse(tag):
-    return tag.text.strip() + ' not currently available'
+    return tag.text.strip() + ' not available'
+
+def _check_unavailable(heading, tag):
+    next_section = 'End of Page'
+
+    if heading != 'Docket Entries':
+        next_section = navigation.HEADINGS[navigation.HEADINGS.index(heading) + 1]
+    section_strings = _page_string_scrubber(tag.find_all_next(string=True), next_section)
+
+    if _key_check(navigation.UNAVAILABLE_STATEMENTS, heading):
+        if navigation.UNAVAILABLE_STATEMENTS.get(heading) in section_strings:
+            return True
+        else:
+            return False
+    return False
 
 def _parse_report_or_desc(table):
     clean_cells = []
@@ -121,9 +141,12 @@ def _parse_violations(tag):
         elif violation_string[0] == ':' and violation_string != ':':
             output[violation_strings[indexer - 1]] = violation_string.replace(':','',1).strip()
         elif violation_string == ':':
-            output[re.sub(':','',violation_strings[indexer - 1] + violation_string)] = 'N/A'
+            if violation_strings[indexer - 1] != 'Plea':
+                output[re.sub(':','',violation_strings[indexer - 1] + violation_string)] = 'N/A'
         if violation_string == 'Plea':
-            output['Description'] = violation_strings[indexer + 2] + ', ' + violation_strings[indexer + 3]
+            output['Plea'] = violation_strings[indexer + 2] + ', ' + violation_strings[indexer + 3]
+        if violation_string == 'Disp':
+            output['Description'] = violation_strings[indexer - 2] + ', ' + violation_strings[indexer - 1]
         indexer += 1
         if len(violation_strings) == indexer:
             output = {k:_scrub_output_values(v) for k, v in output.items()}
