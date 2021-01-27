@@ -13,7 +13,7 @@ def process_case(content):
         heading = tag.text.strip()
         if heading in [] and heading not in navigation.NON_TABLE_DATA: ## should be navigation.HEADINGS
             results[heading] = _determine_parser(heading, tag)
-        elif heading in navigation.NON_TABLE_DATA and heading in ['Violations','Sentence']:
+        elif heading in navigation.NON_TABLE_DATA:
             results[heading] = _handle_custom_parsing(heading, tag)
     return results
 
@@ -27,6 +27,9 @@ def _handle_custom_parsing(heading, tag):
     parser = navigation.CASE_DETAIL_HANDLER.get(heading)
     results = globals()[parser](tag)
     return results
+
+def _skip_parse(tag):
+    return tag.text.strip() + ' not currently available'
 
 def _parse_rsc(table):
     clean_cells = []
@@ -85,6 +88,10 @@ def _parse_sentence(tag):
             output[sentence_strings[indexer - 1]] = sentence_string.replace(':','',1).strip()
         elif sentence_string == ':':
             output[re.sub(':','',sentence_strings[indexer - 1] + sentence_string)] = 'N/A'
+        if sentence_string == 'Name' and indexer != 1:
+            output = {k:_scrub_output_values(v) for k, v in output.items()}
+            results.append(output)
+            output = {}
         indexer += 1
         if len(sentence_strings) == indexer:
             output = {k:_scrub_output_values(v) for k, v in output.items()}

@@ -39,7 +39,7 @@ CASE_DETAIL_HANDLER = {
     'Case Parties': '_parse_parties',
     'Violations': '_parse_violations',
     'Sentence': '_parse_sentence',
-    'Milestone Tracks': '',
+    'Milestone Tracks': '_skip_parse',
     'Docket Entries': ''
 }
 
